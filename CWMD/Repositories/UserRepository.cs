@@ -29,7 +29,7 @@ namespace CWMD.Repositories
             {
                 UserName = userModel.UserName
             };
-
+            context.AppUsers.Add(userModel);
             var result = await userManager.CreateAsync(user, userModel.Password);
             LOG.Info("Add User");
             return result;
@@ -41,10 +41,10 @@ namespace CWMD.Repositories
             return await userManager.FindAsync(userName, password);
         }
 
-        public async Task<List<IdentityUser>> GetAllUsers()
+        public async Task<List<User>> GetAllUsers()
         {
             LOG.Info("Get All Users");
-            return await userManager.Users.ToListAsync();
+            return await context.AppUsers.ToListAsync();
         }
 
         public void Dispose()
