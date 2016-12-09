@@ -11,26 +11,21 @@ namespace CWMD.Repositories
 {
     public class UserRepository : IDisposable
     {
-        private AuthContext context;
+        private ApplicationDbContext context;
 
-        private UserManager<IdentityUser> userManager;
+        private UserManager<User> userManager;
 
         private static readonly ILog LOG = LogManager.GetLogger(typeof(UserRepository));
 
         public UserRepository()
         {
-            context = new AuthContext();
-            userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(context));
-    }
+            context = new ApplicationDbContext();
+            userManager = new UserManager<User>(new UserStore<User>(context));
+        }
 
-        public async Task<IdentityResult> AddUser(User userModel)
+        public async Task<IdentityResult> AddUser(User user)
         {
-            IdentityUser user = new IdentityUser
-            {
-                UserName = userModel.UserName
-            };
-            context.AppUsers.Add(userModel);
-            var result = await userManager.CreateAsync(user, userModel.Password);
+            var result = await userManager.CreateAsync(user, "parola");
             LOG.Info("Add User");
             return result;
         }
@@ -44,7 +39,7 @@ namespace CWMD.Repositories
         public async Task<List<User>> GetAllUsers()
         {
             LOG.Info("Get All Users");
-            return await context.AppUsers.ToListAsync();
+            return await context.Users.ToListAsync();
         }
 
         public void Dispose()

@@ -6,3 +6,4 @@
 - Isabella Ienciu
 - Harasim Bianca
 - Ilie Gabriel-Sorin
+- Stefan Faiciuc
