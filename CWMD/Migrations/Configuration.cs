@@ -29,18 +29,32 @@ namespace CWMD.Migrations
                 Name = "Stefan Faiciuc"
             };
 
+            var user2 = new User()
+            {
+                UserName = "CommonUser",
+                Email = "isabella.ienciu13@gmail.com",
+                EmailConfirmed = true,
+                Name = "Isabella Ienciu"
+            };
+
             manager.Create(user, "MySuperP@ss!");
+            manager.Create(user2, "MyCommonP@ss!");
 
             if (roleManager.Roles.Count() == 0)
             {
                 roleManager.Create(new IdentityRole { Name = "SuperAdmin" });
                 roleManager.Create(new IdentityRole { Name = "Admin" });
-                roleManager.Create(new IdentityRole { Name = "User" });
             }
 
-            var adminUser = manager.FindByName("SuperPowerUser");
+            roleManager.Create(new IdentityRole { Name = "Cititor" });
+            roleManager.Create(new IdentityRole { Name = "Contributor" });
+            roleManager.Create(new IdentityRole { Name = "Manager" });
 
-            manager.AddToRoles(adminUser.Id, new string[] { "SuperAdmin", "Admin" });
+            var adminUser = manager.FindByName("SuperPowerUser");
+            var simpleUser = manager.FindByName("CommonUser");
+
+            manager.AddToRoles(adminUser.Id, new string[] {"Admin" });
+            manager.AddToRoles(simpleUser.Id, new string[] { "Cititor" });
         }
     }
 }

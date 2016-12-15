@@ -70,14 +70,17 @@ export default class Home extends React.Component {
                 <div className="content-wrapper">
                     <h3>Manage users</h3>
                     <div className="row">
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                             <input className="form-control" type="text" id="username" name="username" placeholder="Username"/>
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                             <input className="form-control" type="text" id="name" name="name" placeholder="Name"/>
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                             <input className="form-control" type="text" id="email" name="email" placeholder="email"/>
+                        </div>
+                        <div className="col-md-3">
+                            <input className="form-control" type="text" id="department" name="department" placeholder="department"/>
                         </div>
                         <input type="button" name="addUser" className="btn btn-default" value="Add" onClick={() => this.addUser()}/>
                     </div>

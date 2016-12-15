@@ -6,6 +6,7 @@ import { Router, Route, browserHistory } from 'react-router';
 import Home from "./components/Home";
 import Login from "./components/Login";
 import ManageUsers from "./components/ManageUsers";
+import Workspace from "./components/Workspace"
 
 ReactDOM.render(
     <Router history={browserHistory}>
@@ -13,6 +14,7 @@ ReactDOM.render(
             <Route path="/home" component={Home}/>
             <Route path="/login" component={Login}/>
             <Route path="/manage-users" component={ManageUsers}/>
+            <Route path="/workspace" component={Workspace}/>
         </Route>
     </Router>,
     document.getElementById('root')
