@@ -21,9 +21,9 @@ namespace CWMD.Services
             msg.Body = message.Body;
 
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
-            client.Credentials = new System.Net.NetworkCredential()
+            client.Credentials = new NetworkCredential()
             {
-                UserName = "cwmdcwmdc@gmail.com",
+                UserName = "cwmdcwmd@gmail.com",
                 Password = "adminpass123"
             };
 

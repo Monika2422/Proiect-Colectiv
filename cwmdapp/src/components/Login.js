@@ -37,6 +37,7 @@ export default class Login extends React.Component {
             const path = `/home`;
             browserHistory.push(path);
         }).catch(err => {
+            console.log(err);
         });
     }
 };

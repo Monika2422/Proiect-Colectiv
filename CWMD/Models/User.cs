@@ -13,7 +13,9 @@ namespace CWMD.Models
         [Required]
         public string Name { get; set; }
 
-        public string Department { get; set; }
+        public int? DepartmentID { get; set; }
+
+        public virtual Department Department { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User> manager, string authenticationType)
         {

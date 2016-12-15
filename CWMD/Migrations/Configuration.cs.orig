@@ -1,0 +1,88 @@
+namespace CWMD.Migrations
+{
+    using CWMD.Models;
+    using Microsoft.AspNet.Identity;
+    using Microsoft.AspNet.Identity.EntityFramework;
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+
+    internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
+    {
+        public Configuration()
+        {
+            AutomaticMigrationsEnabled = true;
+        }
+
+        protected override void Seed(ApplicationDbContext context)
+        {
+            //  This method will be called after migrating to the latest version.
+
+            var manager = new UserManager<User>(new UserStore<User>(new ApplicationDbContext()));
+
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new ApplicationDbContext()));
+
+            var dep = new Department() { Name = "Admin Department" };
+
+            context.Departments.Add(dep);
+            context.Departments.Add(new Department() { Name = "Computer Science" });
+            context.Departments.Add(new Department() { Name = "Mathematics" });
+            context.Departments.Add(new Department() { Name = "Deanship" });
+
+            context.SaveChanges();
+
+            var found = context.Departments.Where(d => d.Name == dep.Name);
+
+            var foundDep = found.ToList();
+
+            dep = foundDep[0];
+
+            var user = new User()
+            {
+                UserName = "SuperPowerUser",
+                Email = "stefanfai94@gmail.com",
+                EmailConfirmed = true,
+                Name = "Stefan Faiciuc",
+                DepartmentID = dep.DepartmentID
+            };
+
+<<<<<<< HEAD
+=======
+            var user2 = new User()
+            {
+                UserName = "CommonUser",
+                Email = "isabella.ienciu13@gmail.com",
+                EmailConfirmed = true,
+                Name = "Isabella Ienciu"
+            };
+>>>>>>> cc55697ff7087c0f05681646ea714b9d38bb5f9f
+
+            manager.Create(user, "MySuperP@ss!");
+            manager.Create(user2, "MyCommonP@ss!");
+
+            if (roleManager.Roles.Count() == 0)
+            {
+                roleManager.Create(new IdentityRole { Name = "Admin" });
+<<<<<<< HEAD
+                roleManager.Create(new IdentityRole { Name = "Contributor" });
+                roleManager.Create(new IdentityRole { Name = "Manager" });
+                roleManager.Create(new IdentityRole { Name = "Reader" });
+=======
+>>>>>>> cc55697ff7087c0f05681646ea714b9d38bb5f9f
+            }
+
+            roleManager.Create(new IdentityRole { Name = "Cititor" });
+            roleManager.Create(new IdentityRole { Name = "Contributor" });
+            roleManager.Create(new IdentityRole { Name = "Manager" });
+
+            var adminUser = manager.FindByName("SuperPowerUser");
+            var simpleUser = manager.FindByName("CommonUser");
+
+<<<<<<< HEAD
+            manager.AddToRoles(adminUser.Id, new string[] {"Admin"});
+=======
+            manager.AddToRoles(adminUser.Id, new string[] {"Admin" });
+            manager.AddToRoles(simpleUser.Id, new string[] { "Cititor" });
+>>>>>>> cc55697ff7087c0f05681646ea714b9d38bb5f9f
+        }
+    }
+}
