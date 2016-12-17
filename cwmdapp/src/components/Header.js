@@ -36,6 +36,7 @@ export default class Header extends React.Component {
                                 <ul className="nav navbar-nav">
                                     <li><Link to="/home">Home <span className="sr-only">(current)</span></Link></li>
                                     <li><Link to="/manage-users">Manage Users <span className="sr-only">(current)</span></Link></li>
+                                    <li><Link to="/workspace">Workspace <span className="sr-only">(current)</span></Link></li>
                                 </ul>
                                 <ul className="nav navbar-nav navbar-right">
                                     <li><Link to="/login" className={(this.isLogged() ? 'hide' : 'show')}>Login</Link></li>

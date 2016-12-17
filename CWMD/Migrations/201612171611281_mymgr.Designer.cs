@@ -7,13 +7,13 @@ namespace CWMD.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class mymigration2 : IMigrationMetadata
+    public sealed partial class mymgr : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(mymigration2));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(mymgr));
         
         string IMigrationMetadata.Id
         {
-            get { return "201612041914331_mymigration2"; }
+            get { return "201612171611281_mymgr"; }
         }
         
         string IMigrationMetadata.Source

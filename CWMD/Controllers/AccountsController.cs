@@ -3,10 +3,9 @@ using CWMD.Models;
 using CWMD.Utils;
 using Microsoft.AspNet.Identity;
 using System;
-using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
 
 namespace CWMD.Controllers
@@ -18,9 +17,9 @@ namespace CWMD.Controllers
         [Route("users")]
         public IHttpActionResult GetUsers()
         {
-            return Ok(this.AppUserManager.Users.ToList().Select(u => this.TheModelFactory.Create(u)));
+            return Ok(AppUserManager.Users.Include(u => u.Department).ToList().Select(u => this.TheModelFactory.Create(u)));
         }
-
+        
         [Authorize(Roles = "Admin")]
         [Route("user/{id:guid}", Name = "GetUserById")]
         public async Task<IHttpActionResult> GetUser(string Id)
@@ -61,12 +60,33 @@ namespace CWMD.Controllers
                 return BadRequest(ModelState);
             }
 
+            var foundDepartment = Context.Departments.Where(d => d.Name == userDto.Department);
+
+            var found = foundDepartment.ToList();
+
+            Department dep = null;
+
+            if (found.Count == 0)
+            {
+                if (userDto.Department != null)
+                {
+                    if (userDto.Department != "")
+                    {
+                        return BadRequest("Department doesn't exist");
+                    }
+                }
+            }
+            else
+            {
+                dep = found[0];
+            }
+
             var user = new User()
             {
                 UserName = userDto.Username,
                 Email = userDto.Email,
                 Name = userDto.Name,
-                Department = userDto.Department
+                DepartmentID = dep.DepartmentID
             };
 
             string generatedPassword = new RandomStringGenerator().GenerateRandomString(40);
@@ -82,9 +102,19 @@ namespace CWMD.Controllers
 
             var callbackUrl = new Uri(Url.Link("ConfirmEmailRoute", new { userId = user.Id, code = code }));
 
-            await AppUserManager.SendEmailAsync(user.Id, "Confirm your CWMD account", "Your password is: " + generatedPassword + "\nPlease confirm your account by clicking here: " + callbackUrl);
 
             Uri locationHeader = new Uri(Url.Link("GetUserById", new { id = user.Id }));
+
+            user = AppUserManager.FindByName(userDto.Username);
+
+            await AssignRolesToUser(user.Id, new string[] { userDto.RoleName });
+
+            Context.SaveChanges();
+
+            await AppUserManager.SendEmailAsync(user.Id, "Confirm your CWMD account", "Your password is: " + generatedPassword + "\nPlease confirm your account by clicking here: " + callbackUrl);
+
+
+            user.Department = dep;
 
             return Created(locationHeader, TheModelFactory.Create(user));
         }
@@ -137,12 +167,15 @@ namespace CWMD.Controllers
         public async Task<IHttpActionResult> DeleteUser(string id)
         {
 
-            //Only SuperAdmin or Admin can delete users (Later when implement roles)
-
             var appUser = await this.AppUserManager.FindByIdAsync(id);
 
             if (appUser != null)
             {
+                if (User.Identity.GetUserId() == id)
+                {
+                    return BadRequest("You can't delete your own account");
+                }
+
                 IdentityResult result = await this.AppUserManager.DeleteAsync(appUser);
 
                 if (!result.Succeeded)
@@ -171,7 +204,7 @@ namespace CWMD.Controllers
                 return NotFound();
             }
 
-            var currentRoles = await this.AppUserManager.GetRolesAsync(appUser.Id);
+            var currentRoles = await AppUserManager.GetRolesAsync(appUser.Id);
 
             var rolesNotExists = rolesToAssign.Except(this.AppRoleManager.Roles.Select(x => x.Name)).ToArray();
 

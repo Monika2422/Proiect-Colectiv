@@ -7,6 +7,8 @@ namespace CWMD
 {
     public class ApplicationDbContext : IdentityDbContext<User>
     {
+        public DbSet<Department> Departments { get; set; }
+
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {

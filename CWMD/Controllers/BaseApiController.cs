@@ -16,6 +16,15 @@ namespace CWMD.Controllers
         private ModelFactory _modelFactory;
         private ApplicationUserManager _AppUserManager = null;
         private ApplicationRoleManager _AppRoleManager = null;
+        private ApplicationDbContext _Context;
+
+        protected ApplicationDbContext Context
+        {
+            get
+            {
+                return _Context ?? new ApplicationDbContext();
+            }
+        }
 
         protected ApplicationRoleManager AppRoleManager
         {

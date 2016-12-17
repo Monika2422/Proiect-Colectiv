@@ -43,6 +43,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Code7248.word_reader">
+      <HintPath>..\dll\Code7248.word_reader.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -177,10 +180,19 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\DepartmentsController.cs" />
+    <Compile Include="Controllers\DocumentController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Infrastructure\ApplicationDbContext.cs" />
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
+    <Compile Include="Migrations\201612171611281_mymgr.cs" />
+    <Compile Include="Migrations\201612171611281_mymgr.Designer.cs">
+      <DependentUpon>201612171611281_mymgr.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Department.cs" />
+    <Compile Include="Models\Document.cs" />
+    <Compile Include="Models\DocumentVersion.cs" />
     <Compile Include="Models\RoleBindingModels.cs" />
     <Compile Include="Providers\AuthorizationServerProvider.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
@@ -190,35 +202,22 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201612041901424_mymigration.cs" />
-    <Compile Include="Migrations\201612041901424_mymigration.Designer.cs">
-      <DependentUpon>201612041901424_mymigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201612041914331_mymigration2.cs" />
-    <Compile Include="Migrations\201612041914331_mymigration2.Designer.cs">
-      <DependentUpon>201612041914331_mymigration2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201612042101015_Mymigration3.cs" />
-    <Compile Include="Migrations\201612042101015_Mymigration3.Designer.cs">
-      <DependentUpon>201612042101015_Mymigration3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201612051522041_AnotherOne.cs" />
-    <Compile Include="Migrations\201612051522041_AnotherOne.Designer.cs">
-      <DependentUpon>201612051522041_AnotherOne.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ChangePasswordBindingModel.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\CustomJwtFormat.cs" />
     <Compile Include="Providers\CustomOAuthProvider.cs" />
+    <Compile Include="Repositories\DocumentRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\RandomStringGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -231,17 +230,8 @@
     <Folder Include="App_Start\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201612041901424_mymigration.resx">
-      <DependentUpon>201612041901424_mymigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201612041914331_mymigration2.resx">
-      <DependentUpon>201612041914331_mymigration2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201612042101015_Mymigration3.resx">
-      <DependentUpon>201612042101015_Mymigration3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201612051522041_AnotherOne.resx">
-      <DependentUpon>201612051522041_AnotherOne.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201612171611281_mymgr.resx">
+      <DependentUpon>201612171611281_mymgr.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

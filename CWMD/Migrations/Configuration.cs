@@ -21,26 +21,47 @@ namespace CWMD.Migrations
 
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new ApplicationDbContext()));
 
+            var dep = new Department() { Name = "Admin Department" };
+
+            context.Departments.Add(dep);
+            context.Departments.Add(new Department() { Name = "Computer Science" });
+            context.Departments.Add(new Department() { Name = "Mathematics" });
+            context.Departments.Add(new Department() { Name = "Deanship" });
+
+            context.SaveChanges();
+
+            var found = context.Departments.Where(d => d.Name == dep.Name);
+
+            var foundDep = found.ToList();
+
+            dep = foundDep[0];
+
             var user = new User()
             {
-                UserName = "SuperPowerUser",
+                UserName = "admin",
                 Email = "stefanfai94@gmail.com",
                 EmailConfirmed = true,
-                Name = "Stefan Faiciuc"
+                Name = "admin",
+                DepartmentID = dep.DepartmentID
             };
 
-            manager.Create(user, "MySuperP@ss!");
+            manager.Create(user, "adminpass123");
 
             if (roleManager.Roles.Count() == 0)
             {
-                roleManager.Create(new IdentityRole { Name = "SuperAdmin" });
                 roleManager.Create(new IdentityRole { Name = "Admin" });
-                roleManager.Create(new IdentityRole { Name = "User" });
+                roleManager.Create(new IdentityRole { Name = "Contributor" });
+                roleManager.Create(new IdentityRole { Name = "Manager" });
+                roleManager.Create(new IdentityRole { Name = "Reader" });
             }
 
-            var adminUser = manager.FindByName("SuperPowerUser");
+            context.SaveChanges();
 
-            manager.AddToRoles(adminUser.Id, new string[] { "SuperAdmin", "Admin" });
+            var adminUser = manager.FindByName("admin");
+
+            manager.AddToRoles(adminUser.Id, new string[] {"Admin"});
+
+            context.SaveChanges();
         }
     }
 }
