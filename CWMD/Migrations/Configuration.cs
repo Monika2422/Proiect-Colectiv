@@ -3,6 +3,7 @@ namespace CWMD.Migrations
     using CWMD.Models;
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Identity.EntityFramework;
+    using System;
     using System.Data.Entity.Migrations;
     using System.Linq;
 
@@ -47,6 +48,17 @@ namespace CWMD.Migrations
 
             manager.Create(user, "adminpass123");
 
+            var user2 = new User()
+            {
+                UserName = "manager",
+                Email = "isabellaienciu@gmail.com",
+                EmailConfirmed = true,
+                Name = "manager",
+                DepartmentID = dep.DepartmentID
+            };
+
+            manager.Create(user2, "manager007");
+
             if (roleManager.Roles.Count() == 0)
             {
                 roleManager.Create(new IdentityRole { Name = "Admin" });
@@ -58,10 +70,92 @@ namespace CWMD.Migrations
             context.SaveChanges();
 
             var adminUser = manager.FindByName("admin");
+            var managerUser = manager.FindByName("manager");
 
             manager.AddToRoles(adminUser.Id, new string[] {"Admin"});
+            manager.AddToRoles(managerUser.Id, new string[] { "Manager" });
 
             context.SaveChanges();
+
+            context.Documents.AddOrUpdate(x => x.Id,
+                new Document()
+                {
+                    Id = 1,
+                    FileName = "doc1",
+                    FileExtension = "doc",
+                    CreationDate = DateTime.Today,
+                    TemplateName = null,
+                    Abstract = "abstract stuff",
+                    Status = "DRAFT",
+                    KeyWords = "keyword1 keyword2",
+                    AuthorUserName = "admin"
+                },
+                new Document()
+                {
+                    Id = 2,
+                    FileName = "doc2",
+                    FileExtension = "doc",
+                    CreationDate = DateTime.Today,
+                    TemplateName = null,
+                    Abstract = "more abstract stuff",
+                    Status = "DRAFT",
+                    KeyWords = "keyword1 keyword2 keyword3",
+                    AuthorUserName = "admin"
+                },
+                new Document()
+                {
+                    Id = 3,
+                    FileName = "doc3",
+                    FileExtension = "doc",
+                    CreationDate = DateTime.Today,
+                    TemplateName = null,
+                    Abstract = "manager abstract stuff",
+                    Status = "DRAFT",
+                    KeyWords = "keyword1 keyword2 keyword3",
+                    AuthorUserName = "manager"
+                }
+            );
+
+        string filesDirectory = "D:\\Dev\\ProiectColectiv\\CWMD\\files\\";
+
+        context.DocumentVersions.AddOrUpdate(x => x.Id,
+                new DocumentVersion()
+                {
+                    Id = 1,
+                    VersionNumber = 0.1f,
+                    filePath = filesDirectory + "doc1" + "1" + "." + "doc",
+                    DocumentId = 1,
+                    ModifiedBy = "admin",
+                    CreationDate = DateTime.Today
+                },
+                new DocumentVersion()
+                {
+                    Id = 2,
+                    VersionNumber = 0.2f,
+                    filePath = filesDirectory + "doc1" + "2" + "." + "doc",
+                    DocumentId = 1,
+                    ModifiedBy = "admin",
+                    CreationDate = DateTime.Today
+                },
+                new DocumentVersion()
+                {
+                    Id = 3,
+                    VersionNumber = 0.1f,
+                    filePath = filesDirectory + "doc2" + "1" + "." + "doc",
+                    DocumentId = 2,
+                    ModifiedBy = "admin",
+                    CreationDate = DateTime.Today
+                },
+                new DocumentVersion()
+                {
+                    Id = 4,
+                    VersionNumber = 0.1f,
+                    filePath = filesDirectory + "doc3" + "1" + "." + "doc",
+                    DocumentId = 3,
+                    ModifiedBy = "manager",
+                    CreationDate = DateTime.Today
+                }
+            );
         }
     }
 }

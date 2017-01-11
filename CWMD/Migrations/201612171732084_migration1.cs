@@ -3,7 +3,7 @@ namespace CWMD.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class mymgr : DbMigration
+    public partial class migration1 : DbMigration
     {
         public override void Up()
         {

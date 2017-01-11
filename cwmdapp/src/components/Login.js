@@ -34,6 +34,7 @@ export default class Login extends React.Component {
         }).then( result => {
             console.log(result);
             cookie.save('authToken', result, { path: '/' });
+            cookie.save('username', username, { path: '/' });
             const path = `/home`;
             browserHistory.push(path);
         }).catch(err => {

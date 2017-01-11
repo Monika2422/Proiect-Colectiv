@@ -7,6 +7,7 @@ import $ from "../../node_modules/jquery/dist/jquery";
 
 export default class Workspace extends React.Component {
 
+
     constructor() {
         super();
         this.state = {
@@ -18,8 +19,10 @@ export default class Workspace extends React.Component {
     }
 
     loadDocuments() {
+        var username = cookie.load('username');
+        console.log("Username"+username);
         $.ajax({
-            url: "http://localhost:58879/api/doc/documents",
+            url: "http://localhost:58879/api/docs/documents/"+username,
             type: "get",
             headers: {'Content-Type': 'application/json'},
             dataType: "json"
@@ -35,7 +38,7 @@ export default class Workspace extends React.Component {
 
     loadVersions() {
         $.ajax({
-            url: "http://localhost:58879/api/doc/versions",
+            url: "http://localhost:58879/api/ver/versions",
             type: "get",
             headers: {'Content-Type': 'application/json'},
             dataType: "json"
