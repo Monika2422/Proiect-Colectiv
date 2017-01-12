@@ -4,6 +4,9 @@
 import React from 'react';
 import cookie from "react-cookie";
 import $ from "../../node_modules/jquery/dist/jquery";
+import {Modal, Button} from "react-bootstrap";
+
+var Dropzone = require('react-dropzone');
 
 export default class Workspace extends React.Component {
 
@@ -12,10 +15,17 @@ export default class Workspace extends React.Component {
         super();
         this.state = {
             documents: [],
-            documentsSize: 0
+            documentsSize: 0,
+            showModal: false,
+            file: '',
+            filePreviewUrl: ''
         };
         this.loadDocuments.bind(this);
         this.loadVersions.bind(this);
+        this.open.bind(this);
+        this.close.bind(this);
+        this.handleFile.bind(this);
+        this.handleSubmit.bind(this);
     }
 
     loadDocuments() {
@@ -94,6 +104,65 @@ export default class Workspace extends React.Component {
 
     }
 
+    close() {
+        this.setState({showModal: false });
+    }
+
+    open() {
+        this.setState({showModal: true });
+    }
+
+    handleFile(e) {
+        e.preventDefault();
+
+        let reader = new FileReader();
+        let file = e.target.files[0];
+
+        reader.onloadend = () => {
+            this.setState({
+                file: file,
+                filePreviewUrl: reader.result
+            });
+        };
+
+        reader.readAsDataURL(file);
+        console.log("File received");
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        let abstract = $("#abstractInput").val();
+        let keywords = $("#keywordsInput").val();
+        let username = cookie.load('username');
+        let uploadedFile = this.state.file;
+        console.log('handle uploading-', this.state.file);
+        console.log(abstract);
+        console.log(keywords);
+
+        var formData = new FormData();
+        formData.append("UploadedFile",uploadedFile);
+        formData.append("KeyWords",keywords);
+        formData.append("Abstract",abstract);
+        formData.append("Username",username);
+
+        $.ajax({
+            url: "http://localhost:58879/api/files/upload",
+            type: "post",
+            data: formData,
+            Authorization: 'Bearer ' + cookie.load('authToken')['access_token'],
+            dataType: 'json',
+            cache: false,
+            processData: false,
+            contentType: false
+        }).then( result => {
+            this.loadDocuments();
+            console.log("upload complete!");
+        }).catch(err => {
+            console.log(err);
+        });
+    }
+
+
     render() {
 
         var tdstyle = {
@@ -105,6 +174,12 @@ export default class Workspace extends React.Component {
         if (this.isLogged())
             return (
                 <div className="content-wrapper">
+                    <h3>Workspace</h3>
+                    <Button
+                        bsStyle="primary"
+                        onClick={() => this.open()}
+                        value="Add document"
+                    >Add Document</Button>
                     <table className="table">
                         <tr>
                             <td style={tdstyle}>
@@ -140,7 +215,32 @@ export default class Workspace extends React.Component {
                             </td>
                         </tr>
                     </table>
+                    <Modal show={this.state.showModal} onHide={() => this.close()}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Add document:</Modal.Title>
+                        </Modal.Header>
 
+                        <Modal.Body>
+                            <form>
+                                <div className="form-group">
+                                    <input className="form-control" type="text" id="abstractInput" name="abstract" placeholder="Abstract"/>
+                                </div>
+                                <div className="form-group">
+                                    <input className="form-control" type="text" id="keywordsInput" name="keywords" placeholder="Key Words"/>
+                                </div>
+                                <div>
+                                    <input className="fileInput" type="file" onChange={(e)=>this.handleFile(e)} />
+
+                                </div>
+
+                            </form>
+                        </Modal.Body>
+
+                        <Modal.Footer>
+                            <Button onClick={() => this.close()}>Close</Button>
+                            <Button bsStyle="primary"  onClick={(e)=>this.handleSubmit(e)}>Save</Button>
+                        </Modal.Footer>
+                    </Modal>
                 </div>
             );
         else
