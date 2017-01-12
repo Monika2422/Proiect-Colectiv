@@ -19,7 +19,6 @@ namespace CWMD.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: api/Documents
         [Route("documents")]
         public IHttpActionResult GetDocuments()
         {
@@ -31,12 +30,23 @@ namespace CWMD.Controllers
         public async Task<IHttpActionResult> GetDocumentsForUser(String username)
         {
             List<Document> documents = db.Documents.Where(d => d.AuthorUserName == username).ToList();
-            if (documents.Count == 0)
+            if (!documents.Any())
             {
                 return NotFound();
             }
 
             return Ok(documents);
+        }
+
+        public Document GetDocumentByName(String name)
+        {
+            List<Document> documents = db.Documents.Where(d => d.FileName == name).ToList();
+            if (!documents.Any())
+            {
+                return null;
+            }
+
+            return documents[0];
         }
 
         // GET: api/Documents/5

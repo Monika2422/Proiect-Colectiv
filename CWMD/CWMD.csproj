@@ -183,6 +183,7 @@
     <Compile Include="Controllers\DepartmentsController.cs" />
     <Compile Include="Controllers\DocumentsController.cs" />
     <Compile Include="Controllers\DocumentVersionsController.cs" />
+    <Compile Include="Controllers\FileController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Infrastructure\ApplicationDbContext.cs" />
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />

@@ -80,7 +80,6 @@ namespace CWMD.Migrations
             context.Documents.AddOrUpdate(x => x.Id,
                 new Document()
                 {
-                    Id = 1,
                     FileName = "doc1",
                     FileExtension = "doc",
                     CreationDate = DateTime.Today,
@@ -92,7 +91,6 @@ namespace CWMD.Migrations
                 },
                 new Document()
                 {
-                    Id = 2,
                     FileName = "doc2",
                     FileExtension = "doc",
                     CreationDate = DateTime.Today,
@@ -104,7 +102,6 @@ namespace CWMD.Migrations
                 },
                 new Document()
                 {
-                    Id = 3,
                     FileName = "doc3",
                     FileExtension = "doc",
                     CreationDate = DateTime.Today,
@@ -116,12 +113,11 @@ namespace CWMD.Migrations
                 }
             );
 
-        string filesDirectory = "D:\\Dev\\ProiectColectiv\\CWMD\\files\\";
+        string filesDirectory = "D:\\Dev\\ProiectColectiv\\CWMD\\CWMD\\App_Data\\UPLOADS\\";
 
         context.DocumentVersions.AddOrUpdate(x => x.Id,
                 new DocumentVersion()
                 {
-                    Id = 1,
                     VersionNumber = 0.1f,
                     filePath = filesDirectory + "doc1" + "1" + "." + "doc",
                     DocumentId = 1,
@@ -130,7 +126,6 @@ namespace CWMD.Migrations
                 },
                 new DocumentVersion()
                 {
-                    Id = 2,
                     VersionNumber = 0.2f,
                     filePath = filesDirectory + "doc1" + "2" + "." + "doc",
                     DocumentId = 1,
@@ -139,7 +134,6 @@ namespace CWMD.Migrations
                 },
                 new DocumentVersion()
                 {
-                    Id = 3,
                     VersionNumber = 0.1f,
                     filePath = filesDirectory + "doc2" + "1" + "." + "doc",
                     DocumentId = 2,
@@ -148,7 +142,6 @@ namespace CWMD.Migrations
                 },
                 new DocumentVersion()
                 {
-                    Id = 4,
                     VersionNumber = 0.1f,
                     filePath = filesDirectory + "doc3" + "1" + "." + "doc",
                     DocumentId = 3,

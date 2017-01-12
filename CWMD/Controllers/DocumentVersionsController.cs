@@ -19,7 +19,6 @@ namespace CWMD.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: api/DocumentVersions
         [Route("versions")]
         public IHttpActionResult GetDocumentVersions()
         {
@@ -32,12 +31,23 @@ namespace CWMD.Controllers
         public async Task<IHttpActionResult> GetVersionsForDocument(int id)
         {
             List<DocumentVersion> documentVersions = db.DocumentVersions.Where(b => b.DocumentId ==id).ToList();
-            if (documentVersions.Count==0)
+            if (!documentVersions.Any())
             {
                 return NotFound();
             }
 
             return Ok(documentVersions);
+        }
+
+        public List<DocumentVersion> GetVersions(int id)
+        {
+            List<DocumentVersion> documentVersions = db.DocumentVersions.Where(b => b.DocumentId == id).ToList();
+            if (!documentVersions.Any())
+            {
+                return null;
+            }
+
+            return documentVersions;
         }
 
         // GET: api/DocumentVersions/5
