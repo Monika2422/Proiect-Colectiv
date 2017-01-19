@@ -2,12 +2,16 @@
 using CWMD.Controllers;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Migrations;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using CWMD.Utils;
 
 namespace CWMD.Controllers
 {
@@ -16,7 +20,6 @@ namespace CWMD.Controllers
     {
         private DocumentsController documentsController = new DocumentsController();
         private DocumentVersionsController documentVersionsController = new DocumentVersionsController();
-        private string filesDirectory = "D:\\Dev\\ProiectColectiv\\CWMD\\CWMD\\App_Data\\UPLOADS\\";
 
         [Route("upload")]
         [HttpPost]
@@ -33,16 +36,20 @@ namespace CWMD.Controllers
                     string filename = postedFile.FileName;
                     string[] filenameParts = filename.Split('.');
 
-                    string filenameForSave;
+                    string filenameForSave = string.Empty;
 
-                    Document doc = documentsController.GetDocumentByName(filenameParts[0]);
-                    if (doc == null)
+                    var fileName = string.Join(".", filenameParts.Take(filenameParts.Length - 1).ToList());
+                    var fileExt = filenameParts[filenameParts.Length - 1];
+
+                    Document doc = documentsController.GetDocumentByName(fileName);
+
+                    if (doc == null || doc.FileExtension != fileExt)
                     {
                         //document is new, create it
                         doc = new Document()
                         {
-                            FileName = filenameParts[0],
-                            FileExtension = filenameParts[1],
+                            FileName = string.Join(".", fileName),
+                            FileExtension = fileExt,
                             CreationDate = DateTime.Today,
                             TemplateName = null,
                             Abstract = HttpContext.Current.Request["Abstract"],
@@ -52,14 +59,14 @@ namespace CWMD.Controllers
                         };
 
                         await documentsController.PostDocument(doc);
-                        Document postedDoc = documentsController.GetDocumentByName(filenameParts[0]);
+                        Document postedDoc = documentsController.GetDocumentByName(fileName);
 
                         //add first version
-                        filenameForSave = filenameParts[0] + "1" + "." + filenameParts[1];
+                        filenameForSave = $"{fileName}1.{fileExt}";
                         DocumentVersion docVersion = new DocumentVersion()
                         {
                             VersionNumber = 0.1f,
-                            filePath = filesDirectory + filenameForSave,
+                            filePath = StringConstants.FolderPath + filenameForSave,
                             DocumentId = postedDoc.Id,
                             ModifiedBy = HttpContext.Current.Request["Username"],
                             CreationDate = DateTime.Today
@@ -74,14 +81,18 @@ namespace CWMD.Controllers
 
                         //get latest version number
                         List<DocumentVersion> existingVersions = documentVersionsController.GetVersions(doc.Id);
-                        float latestVersionNumber = existingVersions[0].VersionNumber;
-                        foreach (DocumentVersion dv in existingVersions)
-                        {
-                            if (dv.VersionNumber > latestVersionNumber)
-                            {
-                                latestVersionNumber = dv.VersionNumber;
-                            }
-                        }
+                        float latestVersionNumber = existingVersions?[0].VersionNumber ?? 0;
+
+                        latestVersionNumber =
+                            existingVersions?.Where(dv => dv.VersionNumber >= latestVersionNumber)
+                                .Select(dv => dv.VersionNumber).OrderByDescending(verNum=>verNum).First() ?? 0;
+                        //foreach (DocumentVersion dv in existingVersions)
+                        //{
+                        //    if (dv.VersionNumber > latestVersionNumber)
+                        //    {
+                        //        latestVersionNumber = dv.VersionNumber;
+                        //    }
+                        //}
 
                         //increment version number
                         float currentVersionNumber = latestVersionNumber + 0.1f;
@@ -89,23 +100,26 @@ namespace CWMD.Controllers
                         //create document name
                         string s = currentVersionNumber.ToString("#.#########", System.Globalization.CultureInfo.InvariantCulture);
                         int i = Int32.Parse(s.Substring(s.IndexOf(".") + 1));
-                        filenameForSave = filenameParts[0] + i.ToString() + "." + filenameParts[1];
+                        filenameForSave = $"{fileName}{i}.{fileExt}";
                         DocumentVersion docVersion = new DocumentVersion()
                         {
                             VersionNumber = currentVersionNumber,
-                            filePath = filesDirectory + filenameForSave,
+                            filePath = Path.Combine(StringConstants.FolderPath, filenameForSave),
                             DocumentId = doc.Id,
                             ModifiedBy = HttpContext.Current.Request["Username"],
                             CreationDate = DateTime.Today
                         };
-
+                        UpdateFileDescription(doc, HttpContext.Current.Request["Abstract"],
+                            HttpContext.Current.Request["KeyWords"]);
                         await documentVersionsController.PostDocumentVersion(docVersion);
 
                     }
 
                     //save document version to disk
-                    var filePath = HttpContext.Current.Server.MapPath("~/App_Data/UPLOADS/" + filenameForSave);
-                    postedFile.SaveAs(filePath);
+                    //mai dati-va-n cacat de-aci
+                    //var filePath = HttpContext.Current.Server.MapPath(Path.Combine(StringConstants.FolderPath, filenameForSave));
+                    
+                    postedFile.SaveAs($"{StringConstants.FolderPath}\\{filenameForSave}");
                 }
                 return Ok();
             }
@@ -114,6 +128,21 @@ namespace CWMD.Controllers
                 return InternalServerError();
             }
 
+        }
+
+        private void UpdateFileDescription(Document doc, string @abstract, string keywords)
+        {
+            var document = Context.Documents.Where(docs => docs.Id == doc.Id)
+                .Select(_doc => _doc).First();
+
+            document.Abstract = @abstract;
+            document.KeyWords = keywords;
+
+            using(var context = new ApplicationDbContext())
+            {
+                context.Documents.AddOrUpdate(document);
+                context.SaveChanges();
+            }
         }
     }
 }

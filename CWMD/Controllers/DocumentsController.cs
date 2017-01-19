@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -11,6 +12,8 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using CWMD;
 using CWMD.Models;
+using CWMD.Services;
+using CWMD.Utils;
 
 namespace CWMD.Controllers
 {
@@ -60,6 +63,18 @@ namespace CWMD.Controllers
             }
 
             return Ok(document);
+        }
+
+        // GET: api/Documents/download/1
+        [ResponseType(typeof(Document))]
+        [Route("download/{id}")]
+        [HttpGet]
+        public async Task<IHttpActionResult> DownloadDocument(int id)
+        {
+            var fileInfo = new FileInfo(StringConstants.FolderPath + "\\altfish5.doc");
+            return !fileInfo.Exists
+                ? (IHttpActionResult)NotFound()
+                : new FileResult(fileInfo.FullName);
         }
 
         // PUT: api/Documents/5

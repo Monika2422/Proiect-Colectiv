@@ -5807,40 +5807,6 @@ button.close {
 @media print {
   .hidden-print {
     display: none !important; } }
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Roboto', sans-serif; }
-
-.App {
-  text-align: center; }
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px; }
-
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white; }
-
-.App-intro {
-  font-size: large; }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg); }
-  to {
-    transform: rotate(360deg); } }
-li {
-  list-style: none; }
-
-.nav-wrapper, .content-wrapper {
-  width: 80%;
-  max-width: 1000px;
-  margin: 0 auto; }
-
 .login-container {
   padding: 30px;
   max-width: 350px;
@@ -5910,10 +5876,77 @@ li {
   opacity: 0.6;
   transition: opacity ease 0.5s; }
 
+ul.document-list {
+  margin-left: 0;
+  padding-left: 0;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  margin-top: 20px; }
+  ul.document-list li {
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    cursor: pointer;
+    transition: all .4s; }
+    ul.document-list li:hover {
+      background: #ccc; }
+    ul.document-list li h4 {
+      margin: 0; }
+    ul.document-list li p {
+      color: #999;
+      font-size: 13px;
+      padding-top: 4px;
+      margin-bottom: 6px; }
+
+ul.document-info li {
+  padding-bottom: 6px; }
+ul.document-info p {
+  color: #999; }
+
+ul.version-info {
+  margin-left: 0;
+  padding-left: 0; }
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif; }
+
+.App {
+  text-align: center; }
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px; }
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white; }
+
+.App-intro {
+  font-size: large; }
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }
+li {
+  list-style: none; }
+
+.nav-wrapper, .content-wrapper {
+  width: 80%;
+  max-width: 1000px;
+  margin: 0 auto; }
+
 .hide {
   display: none; }
 
 .users-table {
   margin-top: 20px; }
+
+.page-title {
+  margin-bottom: 30px; }
 
 /*# sourceMappingURL=main.css.map */

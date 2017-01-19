@@ -54,14 +54,14 @@ namespace CWMD.Controllers
             {
                 //Url = _UrlHelper.Link("GetUserById", new { id = appUser.Id }),
                 Id = document.Id,
-                FileName=document.FileName,
+                FileName = document.FileName,
                 FileExtension = document.FileExtension,
-                CreationDate =document.CreationDate,
-                TemplateName=document.TemplateName,
-                Abstract=document.Abstract,
-                Status=document.Status,
-                KeyWords=document.KeyWords,
-                AuthorUserName=document.AuthorUserName
+                CreationDate = document.CreationDate,
+                TemplateName = document.TemplateName,
+                Abstract = document.Abstract,
+                Status = document.Status,
+                KeyWords = document.KeyWords,
+                AuthorUserName = document.AuthorUserName
             };
         }
 

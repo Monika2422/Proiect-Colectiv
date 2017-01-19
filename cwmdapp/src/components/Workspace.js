@@ -10,7 +10,6 @@ var Dropzone = require('react-dropzone');
 
 export default class Workspace extends React.Component {
 
-
     constructor() {
         super();
         this.state = {
@@ -18,7 +17,9 @@ export default class Workspace extends React.Component {
             documentsSize: 0,
             showModal: false,
             file: '',
-            filePreviewUrl: ''
+            filePreviewUrl: '',
+            currentVersions: [],
+            currentDocument: {}
         };
         this.loadDocuments.bind(this);
         this.loadVersions.bind(this);
@@ -37,7 +38,7 @@ export default class Workspace extends React.Component {
             headers: {'Content-Type': 'application/json'},
             dataType: "json"
         }).then( result => {
-            console.log("result found")
+            console.log("result found");
             console.log(result);
             this.setState({documents: result});
             this.setState({documentsSize: result.length});
@@ -53,7 +54,7 @@ export default class Workspace extends React.Component {
             headers: {'Content-Type': 'application/json'},
             dataType: "json"
         }).then( result => {
-            console.log("result found")
+            console.log("result found");
             console.log(result);
             this.setState({versions: result});
         }).catch(err => {
@@ -162,7 +163,44 @@ export default class Workspace extends React.Component {
         });
     }
 
+    getDateFormat(d) {
+        let monthNames = [
+            "January", "February", "March",
+            "April", "May", "June", "July",
+            "August", "September", "October",
+            "November", "December"
+        ];
+        let date = new Date(d);
+        let day = date.getDate();
+        let monthIndex = date.getMonth();
+        let year = date.getFullYear();
 
+        return day + " " + monthNames[monthIndex] + " " + year;
+    }
+
+    handleDocumentClick(id) {
+        let document = {};
+        for(let i = 0; i < this.state.documents.length; i++) {
+            let obj = this.state.documents[i];
+            if(obj.id === id){
+                document = obj;
+            }
+        }
+
+        let versions = [];
+        for(let i = 0; i < this.state.versions.length; i++) {
+            let obj = this.state.versions[i];
+            if(obj.documentId === id){
+                versions.push(obj);
+            }
+        }
+        this.setState({
+            currentVersions: versions,
+            currentDocument: document
+        });
+        console.log(this.state.currentDocument);
+        console.log(this.state.currentVersions);
+    }
     render() {
 
         var tdstyle = {
@@ -171,50 +209,71 @@ export default class Workspace extends React.Component {
             padding: '5px'
         };
 
+        let docs = this.state.documents.map(doc =>
+            <li onClick={() => this.handleDocumentClick(doc.id)}>
+                <h4>{doc.fileName + "." + doc.fileExtension}</h4>
+                <p>{this.getDateFormat(doc.creationDate)}</p>
+            </li>
+        );
+
+
         if (this.isLogged())
             return (
                 <div className="content-wrapper">
-                    <h3>Workspace</h3>
-                    <Button
-                        bsStyle="primary"
-                        onClick={() => this.open()}
-                        value="Add document"
-                    >Add Document</Button>
-                    <table className="table">
-                        <tr>
-                            <td style={tdstyle}>
-                                <h4>Abstract: </h4><div id="abstract"></div>
-                                <h4>Status: </h4><div id="status"></div>
-                                <h4>Key Words: </h4><div id="keyWords"></div>
-                            </td>
+                    <h3 className="page-title">Workspace</h3>
+                    <div className="row">
+                        <div className="col-sm-6 col-md-4">
+                            <Button
+                                bsStyle="primary"
+                                onClick={() => this.open()}
+                                value="Add document"
+                            >
+                                Add Document
+                            </Button>
+                            <ul className="document-list">
+                                {docs}
+                            </ul>
+                        </div>
+                        <div className="col-sm-6 col-md-8">
+                            <ul className="document-info">
+                                <li>
+                                    <h4>Abstract</h4>
+                                    <p>
+                                        {this.state.currentDocument.abstract}
+                                    </p>
+                                </li>
+                                <li>
+                                    <h4>Status</h4>
+                                    <p>
+                                        <li>{this.state.currentDocument.status}</li>
+                                    </p>
+                                </li>
+                                <li>
+                                    <h4>Keywords</h4>
+                                    <p>
+                                        <li>{this.state.currentDocument.keyWords}</li>
+                                    </p>
+                                </li>
+                                <li>
+                                    <h4>
+                                        Versions
+                                    </h4>
+                                    <ul className="version-info">
+                                        {
+                                            this.state.currentVersions.map(v => {
+                                                console.log("VERSION:");
+                                                console.log(v);
+                                                return <li>{v.versionNumber}</li>
+                                            })
+                                        }
 
-                            <td style={tdstyle}>
-                                <div id="versionsdiv"></div>
-                                <div className="table-bordered" id="textdiv"></div>
-                            </td>
+                                    </ul>
+                                </li>
+                            </ul>
 
-                            <td style={tdstyle}>
-                                <table className="table table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th>File Name</th>
-                                        <th>Creation Date</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {
-                                        this.state.documents.map(document => (
-                                            <tr onClick={() => this.handleClick(document.id)}>
-                                                <td>{document.fileName}</td>
-                                                <td>{document.creationDate}</td>
-                                            </tr>
-                                        ))
-                                    }
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
+                        </div>
+                    </div>
+
                     <Modal show={this.state.showModal} onHide={() => this.close()}>
                         <Modal.Header closeButton>
                             <Modal.Title>Add document:</Modal.Title>

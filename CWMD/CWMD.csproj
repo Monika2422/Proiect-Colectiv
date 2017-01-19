@@ -44,7 +44,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Code7248.word_reader">
-      <HintPath>..\dll\Code7248.word_reader.dll</HintPath>
+      <HintPath>references\Code7248.word_reader.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
@@ -188,6 +188,10 @@
     <Compile Include="Infrastructure\ApplicationDbContext.cs" />
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
+    <Compile Include="Migrations\201701191243024_MyMigr.cs" />
+    <Compile Include="Migrations\201701191243024_MyMigr.Designer.cs">
+      <DependentUpon>201701191243024_MyMigr.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Department.cs" />
     <Compile Include="Models\Document.cs" />
     <Compile Include="Models\DocumentVersion.cs" />
@@ -208,7 +212,9 @@
     <Compile Include="Providers\CustomOAuthProvider.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Services\EmailService.cs" />
+    <Compile Include="Services\FileResult.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utils\StringConstants.cs" />
     <Compile Include="Utils\RandomStringGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +231,11 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="App_Start\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201701191243024_MyMigr.resx">
+      <DependentUpon>201701191243024_MyMigr.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

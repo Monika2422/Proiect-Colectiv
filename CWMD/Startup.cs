@@ -9,19 +9,24 @@ using Newtonsoft.Json.Serialization;
 using Owin;
 using System;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net.Http.Formatting;
 using System.Net.Mail;
 using System.Web.Http;
+using CWMD.Utils;
 
 namespace CWMD
 {
-    public partial class Startup
+    public class Startup
     {
         public void Configuration(IAppBuilder app)
         {
 
             HttpConfiguration httpConfig = new HttpConfiguration();
+
+            //Don't have permissions
+            CheckDocumentsFolder(StringConstants.FolderPath);
 
             ConfigureOAuthTokenGeneration(app);
 
@@ -33,6 +38,14 @@ namespace CWMD
 
             app.UseWebApi(httpConfig);
 
+        }
+
+        private void CheckDocumentsFolder(string folderPath)
+        {
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
         }
 
         private void ConfigureOAuthTokenGeneration(IAppBuilder app)

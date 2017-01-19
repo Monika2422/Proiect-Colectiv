@@ -1,3 +1,5 @@
+using CWMD.Utils;
+
 namespace CWMD.Migrations
 {
     using CWMD.Models;
@@ -112,14 +114,12 @@ namespace CWMD.Migrations
                     AuthorUserName = "manager"
                 }
             );
-
-        string filesDirectory = "D:\\Dev\\ProiectColectiv\\CWMD\\CWMD\\App_Data\\UPLOADS\\";
-
+            
         context.DocumentVersions.AddOrUpdate(x => x.Id,
                 new DocumentVersion()
                 {
                     VersionNumber = 0.1f,
-                    filePath = filesDirectory + "doc1" + "1" + "." + "doc",
+                    filePath = StringConstants.FolderPath + "doc1" + "1" + "." + "doc",
                     DocumentId = 1,
                     ModifiedBy = "admin",
                     CreationDate = DateTime.Today
@@ -127,7 +127,7 @@ namespace CWMD.Migrations
                 new DocumentVersion()
                 {
                     VersionNumber = 0.2f,
-                    filePath = filesDirectory + "doc1" + "2" + "." + "doc",
+                    filePath = StringConstants.FolderPath + "doc1" + "2" + "." + "doc",
                     DocumentId = 1,
                     ModifiedBy = "admin",
                     CreationDate = DateTime.Today
@@ -135,7 +135,7 @@ namespace CWMD.Migrations
                 new DocumentVersion()
                 {
                     VersionNumber = 0.1f,
-                    filePath = filesDirectory + "doc2" + "1" + "." + "doc",
+                    filePath = StringConstants.FolderPath + "doc2" + "1" + "." + "doc",
                     DocumentId = 2,
                     ModifiedBy = "admin",
                     CreationDate = DateTime.Today
@@ -143,7 +143,7 @@ namespace CWMD.Migrations
                 new DocumentVersion()
                 {
                     VersionNumber = 0.1f,
-                    filePath = filesDirectory + "doc3" + "1" + "." + "doc",
+                    filePath = StringConstants.FolderPath + "doc3" + "1" + "." + "doc",
                     DocumentId = 3,
                     ModifiedBy = "manager",
                     CreationDate = DateTime.Today
