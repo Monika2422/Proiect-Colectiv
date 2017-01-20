@@ -7,14 +7,16 @@ using System.Web;
 
 namespace CWMD.Models
 {
-    public class FluxTypes
+    public class Flux
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int Id { get; set; }
+        public int IdFlux { get; set; }
         [Required]
-        public String Name { get; set; }
+        public int IdTypeFlux { get; set; }
 
+        public String InitiaterUsername { get; set; }
 
+        public int CurentStep { get; set; }
     }
 }
