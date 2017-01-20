@@ -134,6 +134,7 @@ export default class Workspace extends React.Component {
         e.preventDefault();
         let abstract = $("#abstractInput").val();
         let keywords = $("#keywordsInput").val();
+        let status = $("#statusInput").val();
         let username = cookie.load('username');
         let uploadedFile = this.state.file;
         console.log('handle uploading-', this.state.file);
@@ -145,6 +146,7 @@ export default class Workspace extends React.Component {
         formData.append("KeyWords",keywords);
         formData.append("Abstract",abstract);
         formData.append("Username",username);
+        formData.append("Status", status);
 
         $.ajax({
             url: "http://localhost:58879/api/files/upload",
@@ -201,6 +203,23 @@ export default class Workspace extends React.Component {
         console.log(this.state.currentDocument);
         console.log(this.state.currentVersions);
     }
+
+    deleteDocument(id) {
+        console.log("delete document");
+
+        $.ajax({
+            url: "http://localhost:58879/api/files/delete/"+id,
+            type: "delete",
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cookie.load('authToken')['access_token']}
+        }).then( result => {
+            console.log(result);
+            console.log("upload complete!");
+            this.loadDocuments();
+            this.loadVersions();
+        }).catch(err => {
+            console.log(err);
+        });
+    }
     render() {
 
         var tdstyle = {
@@ -211,8 +230,11 @@ export default class Workspace extends React.Component {
 
         let docs = this.state.documents.map(doc =>
             <li onClick={() => this.handleDocumentClick(doc.id)}>
-                <h4>{doc.fileName + "." + doc.fileExtension}</h4>
-                <p>{this.getDateFormat(doc.creationDate)}</p>
+                    <h4>{doc.fileName + "." + doc.fileExtension}</h4>
+                    <p>{this.getDateFormat(doc.creationDate)}</p>
+                    <td onClick={() => this.deleteDocument(doc.id)}>
+                        <a href="javascript:void(0);" className="btn btn-danger">Delete</a>
+                    </td>
             </li>
         );
 
@@ -286,6 +308,9 @@ export default class Workspace extends React.Component {
                                 </div>
                                 <div className="form-group">
                                     <input className="form-control" type="text" id="keywordsInput" name="keywords" placeholder="Key Words"/>
+                                </div>
+                                <div className="form-group">
+                                    <input className="form-control" type="text" id="statusInput" name="status" placeholder="Status"/>
                                 </div>
                                 <div>
                                     <input className="fileInput" type="file" onChange={(e)=>this.handleFile(e)} />

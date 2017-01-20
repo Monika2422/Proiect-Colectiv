@@ -188,10 +188,6 @@
     <Compile Include="Infrastructure\ApplicationDbContext.cs" />
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
-    <Compile Include="Migrations\201701191243024_MyMigr.cs" />
-    <Compile Include="Migrations\201701191243024_MyMigr.Designer.cs">
-      <DependentUpon>201701191243024_MyMigr.cs</DependentUpon>
-    </Compile>
     <Compile Include="Models\Department.cs" />
     <Compile Include="Models\Document.cs" />
     <Compile Include="Models\DocumentVersion.cs" />
@@ -231,11 +227,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="App_Start\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201701191243024_MyMigr.resx">
-      <DependentUpon>201701191243024_MyMigr.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

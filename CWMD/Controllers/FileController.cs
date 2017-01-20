@@ -42,6 +42,7 @@ namespace CWMD.Controllers
                     var fileExt = filenameParts[filenameParts.Length - 1];
 
                     Document doc = documentsController.GetDocumentByName(fileName);
+                    bool save = true;
 
                     if (doc == null || doc.FileExtension != fileExt)
                     {
@@ -82,44 +83,72 @@ namespace CWMD.Controllers
                         //get latest version number
                         List<DocumentVersion> existingVersions = documentVersionsController.GetVersions(doc.Id);
                         float latestVersionNumber = existingVersions?[0].VersionNumber ?? 0;
-
                         latestVersionNumber =
                             existingVersions?.Where(dv => dv.VersionNumber >= latestVersionNumber)
-                                .Select(dv => dv.VersionNumber).OrderByDescending(verNum=>verNum).First() ?? 0;
-                        //foreach (DocumentVersion dv in existingVersions)
-                        //{
-                        //    if (dv.VersionNumber > latestVersionNumber)
-                        //    {
-                        //        latestVersionNumber = dv.VersionNumber;
-                        //    }
-                        //}
+                                .Select(dv => dv.VersionNumber).OrderByDescending(verNum => verNum).First() ?? 0;
 
-                        //increment version number
-                        float currentVersionNumber = latestVersionNumber + 0.1f;
+                        float currentVersionNumber=0;
+                        
 
-                        //create document name
-                        string s = currentVersionNumber.ToString("#.#########", System.Globalization.CultureInfo.InvariantCulture);
-                        int i = Int32.Parse(s.Substring(s.IndexOf(".") + 1));
-                        filenameForSave = $"{fileName}{i}.{fileExt}";
-                        DocumentVersion docVersion = new DocumentVersion()
+                        //if status didn't change from draft to final
+                        String status = HttpContext.Current.Request["Status"];
+                        if (status == "DRAFT" && doc.Status == "DRAFT")
                         {
-                            VersionNumber = currentVersionNumber,
-                            filePath = Path.Combine(StringConstants.FolderPath, filenameForSave),
-                            DocumentId = doc.Id,
-                            ModifiedBy = HttpContext.Current.Request["Username"],
-                            CreationDate = DateTime.Today
-                        };
-                        UpdateFileDescription(doc, HttpContext.Current.Request["Abstract"],
-                            HttpContext.Current.Request["KeyWords"]);
-                        await documentVersionsController.PostDocumentVersion(docVersion);
+                            //increment version number
+                            currentVersionNumber = latestVersionNumber + 0.1f;
+                        }
+                        else if (status == "FINAL" && doc.Status == "DRAFT")
+                        {
+                            currentVersionNumber = 1.0f;
+                            doc.Status = "FINAL";
+                            await documentsController.PutDocument(doc.Id, doc);
+
+                        }
+                        else if (status == "FINAL" && doc.Status == "FINAL")
+                        {
+                            currentVersionNumber = latestVersionNumber + 1.0f;
+                        }
+
+                        else //illegal arguments
+                        {
+                            save = false;
+                        }
+
+                        if (save)
+                        {
+                            //create document name
+                            string s = currentVersionNumber.ToString("#.#########", System.Globalization.CultureInfo.InvariantCulture);
+                            int i = Int32.Parse(s.Substring(s.IndexOf(".") + 1));
+                            filenameForSave = $"{fileName}{i}.{fileExt}";
+                            DocumentVersion docVersion = new DocumentVersion()
+                            {
+                                VersionNumber = currentVersionNumber,
+                                filePath = Path.Combine(StringConstants.FolderPath, filenameForSave),
+                                DocumentId = doc.Id,
+                                ModifiedBy = HttpContext.Current.Request["Username"],
+                                CreationDate = DateTime.Today
+                            };
+                            UpdateFileDescription(doc, HttpContext.Current.Request["Abstract"],
+                                HttpContext.Current.Request["KeyWords"]);
+                            await documentVersionsController.PostDocumentVersion(docVersion);
+                        }
+                        else
+                        {
+                            return BadRequest();
+                        }
+                        
 
                     }
 
-                    //save document version to disk
-                    //mai dati-va-n cacat de-aci
-                    //var filePath = HttpContext.Current.Server.MapPath(Path.Combine(StringConstants.FolderPath, filenameForSave));
+                    if(save){
+                        //save document version to disk
+                        postedFile.SaveAs($"{StringConstants.FolderPath}\\{filenameForSave}");
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
                     
-                    postedFile.SaveAs($"{StringConstants.FolderPath}\\{filenameForSave}");
                 }
                 return Ok();
             }
@@ -128,6 +157,30 @@ namespace CWMD.Controllers
                 return InternalServerError();
             }
 
+        }
+
+        [Route("delete/{id}")]
+        [HttpDelete]
+        public async Task<IHttpActionResult> DeleteDocument(int id)
+        {
+            await documentsController.DeleteDocument(id);
+
+            int versionsDeleted = 0;
+            List<DocumentVersion> versions = documentVersionsController.GetVersions(id);
+            for (int i = 0; i < versions.Count; i++)
+            {
+                await documentVersionsController.DeleteDocumentVersion(versions[i].Id);
+                File.Delete(versions[i].filePath);
+                versionsDeleted++;
+            }
+            if (versionsDeleted > 0)
+            {
+                return Ok();
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         private void UpdateFileDescription(Document doc, string @abstract, string keywords)
